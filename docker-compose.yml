@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  node:
+    image: smartcontract/chainlink:1.0.1
+    command: local n
+    stdin_open: true
+    tty: true
+    env_file: .env
+    ports:
+      - 6688:6688
+    volumes:
+      - ./.env:/chainlink/.env
+    depends_on:
+      database:
+        condition: service_healthy
+  database:
+    image: postgres:14
+    restart: always
+    domainname: database
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: admin
+    healthcheck:
+      test: pg_isready --username postgres
+      interval: 10s
+      timeout: 5s
+      retries: 5

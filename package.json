@@ -1,0 +1,36 @@
+{
+  "name": "prototype-chainlink-node",
+  "version": "1.0.0",
+  "description": "Prototyping a chainlink node.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CozyReef/prototype-chainlink-node.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CozyReef/prototype-chainlink-node/issues"
+  },
+  "homepage": "https://github.com/CozyReef/prototype-chainlink-node#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@chainlink/contracts": "^0.2.2",
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@openzeppelin/contracts": "^4.3.3",
+    "@trivago/prettier-plugin-sort-imports": "^3.1.1",
+    "@typechain/ethers-v5": "^8.0.4",
+    "@typechain/hardhat": "^3.0.0",
+    "dotenv": "^10.0.0",
+    "ethers": "^5.5.1",
+    "hardhat": "^2.7.0",
+    "prettier": "^2.4.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "ts-node": "^10.4.0",
+    "typechain": "^6.0.4",
+    "typescript": "^4.5.2"
+  }
+}

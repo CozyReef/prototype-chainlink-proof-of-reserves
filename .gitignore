@@ -1,0 +1,16 @@
+# Project Files
+.vim
+.env
+.DS_Store
+
+# Javascript Files
+node_modules
+
+# NextJS files
+.next
+out
+
+# Hardhat Generated Files
+cache
+artifacts
+typechain
