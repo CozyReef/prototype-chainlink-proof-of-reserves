@@ -1,0 +1,20 @@
+[ ] Create an external adapter that will respond to requests for verification of my FakeNFT ownership
+[ ] Setup an external adapter job with local oracle node
+[ ] Deploy contracts onto mumbai
+
+[ ] Configs need to contain my private key + mumbai alchemy node + contract addresses
+[ ] Test will assume oracle node + external adapter is up
+[ ] Tests will
+
+1.
+  - Check if I own token according to custodian
+  - Run verification
+  - Check if I own token according to custodian after verification complete
+
+2.
+  - Check if I own token according to custodian
+  - Mint a new NFT
+  - Run verification
+  - Check if I own token according to custodian after verification complete
+
+

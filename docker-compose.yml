@@ -9,7 +9,7 @@ services:
     ports:
       - 6688:6688
     volumes:
-      - ./.env:/chainlink/.env
+      - ./chainlink/mumbai.env:/chainlink/.env
     depends_on:
       database:
         condition: service_healthy
