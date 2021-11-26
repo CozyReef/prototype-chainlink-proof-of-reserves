@@ -1,13 +1,15 @@
 import "@nomiclabs/hardhat-ethers"
 import "@typechain/hardhat"
+import * as dotenv from "dotenv"
 import { ethers } from "ethers"
 import { HardhatUserConfig, task } from "hardhat/config"
 
+dotenv.config()
 ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR)
 
 task("deployCustodian", "Deploys the custodian contract", async (_, hre) => {
   const factory = await hre.ethers.getContractFactory("Custodian")
-  const contract = await factory.deploy()
+  const contract = await factory.deploy({ gasLimit: 2100000 })
 
   console.log("Contract deployed at: ", contract.address)
 })
@@ -63,6 +65,8 @@ const networkEntries = NETWORKS
       })
   : []
 
+const networkConfigs = Object.fromEntries(networkEntries)
+
 const config: HardhatUserConfig = {
   solidity: {
     compilers: [
@@ -72,7 +76,7 @@ const config: HardhatUserConfig = {
     ],
   },
   defaultNetwork: "hardhat",
-  networks: Object.fromEntries(networkEntries),
+  networks: networkConfigs,
   paths: {
     tests: "./tests",
   },
