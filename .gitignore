@@ -1,6 +1,7 @@
 # Project Files
 .vim
 .env
+chainlink/*.env
 .DS_Store
 
 # Javascript Files

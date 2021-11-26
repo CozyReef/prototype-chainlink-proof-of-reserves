@@ -1,2 +1,2 @@
-# prototype-chainlink-node
-Prototyping a chainlink node.
+# prototype-chainlink-proof-of-reserves
+Prototyping chainlink proof of reserves.
