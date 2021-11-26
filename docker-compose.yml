@@ -5,11 +5,9 @@ services:
     command: local n
     stdin_open: true
     tty: true
-    env_file: .env
+    env_file: ./chainlink/mumbai.env
     ports:
       - 6688:6688
-    volumes:
-      - ./chainlink/mumbai.env:/chainlink/.env
     depends_on:
       database:
         condition: service_healthy
@@ -31,3 +29,4 @@ services:
   adapter:
     image: public.ecr.aws/chainlink/adapters/view-function-adapter:1.0.2
     env_file: .adapter.env
+    domainname: viewFunctionAdapter
