@@ -1,6 +1,6 @@
 # Project Files
 .vim
-.env
+*.env
 chainlink/*.env
 .DS_Store
 

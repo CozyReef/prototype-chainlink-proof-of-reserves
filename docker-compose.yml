@@ -13,6 +13,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      adapter:
+        condition: service_started
   database:
     image: postgres:14
     restart: always
@@ -26,3 +28,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  adapter:
+    image: public.ecr.aws/chainlink/adapters/view-function-adapter:1.0.2
+    env_file: .adapter.env
