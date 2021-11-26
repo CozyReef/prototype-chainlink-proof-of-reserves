@@ -23,15 +23,15 @@ contract Custodian is ChainlinkClient, Ownable {
 
   mapping(address => bool) public requestPending;
 
-  constructor() {
-    setPublicChainlinkToken();
-  }
+  constructor() {}
 
   function setJobConfig(
+    address _link,
     address _oracle,
     bytes32 _jobId,
     uint256 _fee
   ) public onlyOwner {
+    setChainlinkToken(_link);
     oracle = _oracle;
     jobId = _jobId;
     fee = _fee;

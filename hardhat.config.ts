@@ -21,6 +21,24 @@ task("deployFakeNFT", "Deploys the FakeNFT contract", async (_, hre) => {
   console.log("Contract deployed at: ", contract.address)
 })
 
+task("setJobConfig", "Sets the job config on the custodian contract")
+  .addPositionalParam("address", "Address of the custodian contract")
+  .addPositionalParam("link", "Address of link on the custodian contract")
+  .addPositionalParam("oracle", "Address of the oracle node")
+  .addPositionalParam("jobId", "The oracle job to run")
+  .addPositionalParam("fee", "The oracle fee to pay in LINK")
+  .setAction(async (args, hre) => {
+    const contract = await hre.ethers.getContractAt("Custodian", args.contract)
+    const transaction = await contract.setJobConfig(
+      args.link,
+      args.oracle,
+      args.jobId,
+      hre.ethers.utils.parseEther(args.fee)
+    )
+
+    console.log("Job config set: ", transaction.hash)
+  })
+
 task("verify", "Verifies that user owns a token")
   .addPositionalParam("contract", "The address of the Custodian contract")
   .addPositionalParam("address", "The address to check")
