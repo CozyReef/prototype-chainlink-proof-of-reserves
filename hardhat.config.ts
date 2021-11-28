@@ -7,6 +7,8 @@ import { HardhatUserConfig, task } from "hardhat/config"
 dotenv.config()
 ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR)
 
+// TODO - refactor out hardhat tasks
+
 task("deployOracle", "Deploys the oracle contract")
   .addPositionalParam("link", "Address of link on the custodian contract")
   .setAction( async (args, hre) => {
