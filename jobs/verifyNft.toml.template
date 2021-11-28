@@ -1,0 +1,21 @@
+type = "directrequest"
+schemaVersion = 1
+name = "Verify NFT"
+contractAddress = "{ORACLE_CONTRACT_ADDRESS}"
+maxTaskDuration = "1m0s"
+observationSource = """
+    decode_log   [type=ethabidecodelog
+                  abi="OracleRequest(bytes32 indexed specId, address requester, bytes32 requestId, uint256 payment, address callbackAddr, bytes4 callbackFunctionId, uint256 cancelExpiration, uint256 dataVersion, bytes data)"
+                  data="$(jobRun.logData)"
+                  topics="$(jobRun.logTopics)"]
+
+    decode_cbor  [type=cborparse data="$(decode_log.data)"]
+    fetch        [type="bridge" name="viewfunction" requestData="{\\"id\\": $(jobSpec.externalJobID), \\"data\\": { \\"contract\\": \\"{ERC_721_NFT_CONTRACT_ADDRESS}\\", \\"function\\": \\"function ownerOf(uint256 tokenId) public view returns (address)\\", \\"inputParams\\": [$(decode_cbor.tokenId)]}}"]
+    parse        [type=jsonparse path="data,result" data="$(fetch)"]
+    encode_tx    [type=ethabiencode
+                  abi="fulfillOracleRequest(bytes32 _requestId, uint256 _payment, address _callbackAddress, bytes4 _callbackFunctionId, uint256 _expiration, bytes32 _data)"
+                  data="{\\"_requestId\\": $(decode_log.requestId), \\"_payment\\": $(decode_log.payment), \\"_callbackAddress\\": $(decode_log.callbackAddr), \\"_callbackFunctionId\\": $(decode_log.callbackFunctionId), \\"_expiration\\": $(decode_log.cancelExpiration), \\"_data\\": $(parse)}"
+                 ]
+    submit_tx    [type=ethtx to="{ORACLE_CONTRACT_ADDRESS}" data="$(encode_tx)"]
+    decode_log -> decode_cbor -> fetch -> parse -> encode_tx -> submit_tx
+"""

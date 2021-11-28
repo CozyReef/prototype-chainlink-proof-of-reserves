@@ -20,6 +20,7 @@ contract Custodian is ChainlinkClient, Ownable {
 
   mapping(bytes32 => Request) public requests;
   mapping(uint256 => address) public owners;
+  uint256 public fulfills;
 
   mapping(address => bool) public requestPending;
 
@@ -40,7 +41,8 @@ contract Custodian is ChainlinkClient, Ownable {
   function verify(uint256 tokenId) public {
     address sender = address(this);
 
-    // require(!requestPending[sender], "Sender already has a pending request");
+    // Uncomment below if you want to enforce 1 pending request per account
+    //require(!requestPending[sender], "Sender already has a pending request");
 
     Chainlink.Request memory request = buildChainlinkRequest(
       jobId,
@@ -48,25 +50,24 @@ contract Custodian is ChainlinkClient, Ownable {
       this.fulfill.selector
     );
     request.add("tokenId", tokenId.toString());
-    //request.addBytes("address", abi.encodePacked(sender));
 
     bytes32 requestId = sendChainlinkRequestTo(oracle, request, fee);
     requests[requestId] = Request(sender, tokenId);
     requestPending[sender] = true;
   }
 
-  function fulfill(bytes32 requestId, address owner) external {
+  function fulfill(bytes32 requestId, bytes32 owner) public {
     Request storage request = requests[requestId];
 
-    if (request.sender == owner) {
-      owners[request.tokenId] = request.sender;
-    }
+    // TODO: Add validator before minting the token. Only the sender should be able to mint!
+    owners[request.tokenId] = address(uint160(uint256(owner)));
+    fulfills += 1;
 
     delete requestPending[request.sender];
   }
 
-  function ownerOf(uint256 tokenId) public view returns (bool) {
-    return owners[tokenId] == address(this);
+  function ownerOf(uint256 tokenId) public view returns (address) {
+    return owners[tokenId];
   }
 
   function stringToBytes32(string memory source) private pure returns (bytes32 result) {

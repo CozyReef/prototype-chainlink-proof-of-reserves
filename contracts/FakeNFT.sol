@@ -40,7 +40,7 @@ contract FakeNFT is ERC721Enumerable, Ownable {
   }
 
   function mint() external {
-    require(balanceOf(msg.sender) < 1, "Player can only mint one token total");
+    require(balanceOf(msg.sender) < 3, "Player can only mint one token total");
     require(
       totalSupply() + 1 <= MAX_TOKENS,
       "There are not enough tokens left to mint"

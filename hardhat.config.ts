@@ -51,7 +51,7 @@ task("deployCustodian", "Deploys the custodian contract", async (_, hre) => {
 })
 
 // npx hardhat deployCustodian --network mumbai
-//0x2C3349AAb732d0967Ac7dDB096b91b5e1c02714a
+//0xcE94fD1471CE2e76b28d7b023b27e19ba17A05Ca
 
 task("deployFakeNFT", "Deploys the FakeNFT contract", async (_, hre) => {
   const factory = await hre.ethers.getContractFactory("FakeNFT")
@@ -85,7 +85,7 @@ task("setJobConfig", "Sets the job config on the custodian contract")
 
 
 // external job id --> remove hyphens 0eec7e1dd0d2476ca1a872dfb6633f02
-// npx hardhat setJobConfig 0x2C3349AAb732d0967Ac7dDB096b91b5e1c02714a 0x326C977E6efc84E512bB9C30f76E30c160eD06FB 0x14DD47ceb5070F66B1d5e7d07Fc9DfBd3082b7F8 69dad7b2102f48b8b118e47580876fe6 0.1 --network mumbai
+// npx hardhat setJobConfig 0xcE94fD1471CE2e76b28d7b023b27e19ba17A05Ca 0x326C977E6efc84E512bB9C30f76E30c160eD06FB 0x14DD47ceb5070F66B1d5e7d07Fc9DfBd3082b7F8 a0a896a036a94280a15264dc05211b2e 0.1 --network mumbai
 
 task("getOracle", "Verifies that user owns a token")
   .addPositionalParam("contract", "The address of the Custodian contract")
@@ -96,7 +96,7 @@ task("getOracle", "Verifies that user owns a token")
     console.log("Oracle value: ", result)
   })
 
-  // npx hardhat getOracle 0x2C3349AAb732d0967Ac7dDB096b91b5e1c02714a --network mumbai
+  // npx hardhat getOracle 0xcE94fD1471CE2e76b28d7b023b27e19ba17A05Ca --network mumbai
 
 task("getJobId", "Verifies that user owns a token")
   .addPositionalParam("contract", "The address of the Custodian contract")
@@ -107,7 +107,7 @@ task("getJobId", "Verifies that user owns a token")
     console.log("Oracle value: ", result)
   })
 
-  // npx hardhat getJobId 0x2C3349AAb732d0967Ac7dDB096b91b5e1c02714a --network mumbai
+  // npx hardhat getJobId 0xcE94fD1471CE2e76b28d7b023b27e19ba17A05Ca --network mumbai
 
   task("getFee", "Verifies that user owns a token")
   .addPositionalParam("contract", "The address of the Custodian contract")
@@ -118,7 +118,7 @@ task("getJobId", "Verifies that user owns a token")
     console.log("Oracle fee: ", result)
   })
 
-  // npx hardhat getFee 0x2C3349AAb732d0967Ac7dDB096b91b5e1c02714a --network mumbai
+  // npx hardhat getFee 0xcE94fD1471CE2e76b28d7b023b27e19ba17A05Ca --network mumbai
 
 task("verify", "Verifies that user owns a token")
   .addPositionalParam("contract", "The address of the Custodian contract")
@@ -132,22 +132,66 @@ task("verify", "Verifies that user owns a token")
   })
 
 
-// npx hardhat verify 0x2C3349AAb732d0967Ac7dDB096b91b5e1c02714a 0x326C977E6efc84E512bB9C30f76E30c160eD06FB  1 --network mumbai
-
+// npx hardhat verify 0xcE94fD1471CE2e76b28d7b023b27e19ba17A05Ca 0x326C977E6efc84E512bB9C30f76E30c160eD06FB  0 --network mumbai
 
 task(
-  "ownerOf",
-  "Verifies if the user owns the token according to the Custodian"
+  "custodianOwnerOf",
+  "Verifies if the user owns the token according to the FakeNFT"
 )
   .addPositionalParam("contract", "The address of the Custodian contract")
-  .addPositionalParam("address", "The address to check")
   .addPositionalParam("tokenId", "The token ID to verify")
   .setAction(async (args, hre) => {
     const contract = await hre.ethers.getContractAt("Custodian", args.contract)
-    const isOwner = await contract.ownerOf(args.tokenId)
+    const ownerOf = await contract.ownerOf(args.tokenId)
 
-    console.log(`Owner of ${args.tokenId}: ${isOwner}`)
+    console.log(`Owner of ${args.tokenId}: ${ownerOf}`)
   })
+
+// npx hardhat custodianOwnerOf 0xcE94fD1471CE2e76b28d7b023b27e19ba17A05Ca 0 --network mumbai
+
+task(
+  "custodianFulfills",
+  "Check number of fulfill calls on the custodian"
+)
+  .addPositionalParam("contract", "The address of the Custodian contract")
+  .setAction(async (args, hre) => {
+    const contract = await hre.ethers.getContractAt("Custodian", args.contract)
+    const fulfills = await contract.fulfills()
+
+    console.log(`Fulfills: ${fulfills}`)
+  })
+
+  // npx hardhat custodianFulfills 0xcE94fD1471CE2e76b28d7b023b27e19ba17A05Ca 0 --network mumbai
+
+task(
+  "mint",
+  "Mint a FakeNFT"
+)
+  .addPositionalParam("contract", "The address of the FakeNFT contract")
+  .setAction(async (args, hre) => {
+    const contract = await hre.ethers.getContractAt("FakeNFT", args.contract)
+    const transaction = await contract.mint()
+
+    console.log("Mint transaction completed: ", transaction.hash)
+  })
+
+// npx hardhat mint 0x8Adb9842a8526b3e285Aa289B0Ceb217709e8551 --network rinkeby
+
+
+task(
+  "nftOwnerOf",
+  "Verifies if the user owns the token according to the FakeNFT"
+)
+  .addPositionalParam("contract", "The address of the FakeNFT contract")
+  .addPositionalParam("tokenId", "The token ID to verify")
+  .setAction(async (args, hre) => {
+    const contract = await hre.ethers.getContractAt("FakeNFT", args.contract)
+    const ownerOf = await contract.ownerOf(args.tokenId)
+
+    console.log(`Owner of ${args.tokenId}: ${ownerOf}`)
+  })
+
+  // npx hardhat nftOwnerOf 0x8Adb9842a8526b3e285Aa289B0Ceb217709e8551 0 --network rinkeby
 
 const { NETWORKS } = process.env
 
