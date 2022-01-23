@@ -1,0 +1,67 @@
+Running local ETH: https://docs.chain.link/docs/run-an-ethereum-client/
+chainlink node local: https://stackoverflow.com/questions/70008002/authorization-for-chainlink-node-v2-api
+
+
+
+
+==== LOCALLY THIS WORKS
+npx hardhat deployFakeNFT --network localhost
+npx hardhat mint 0x5FbDB2315678afecb367f032d93F642f64180aa3 --network localhost
+npx hardhat nftOwnerOf 0x5FbDB2315678afecb367f032d93F642f64180aa3 0 --network localhost
+
+
+=== RINKEBY TEST NET - THIS WORKS
+npx hardhat deployFakeNFT --network rinkeby
+npx hardhat mint 0xdA9a6BCFf10D92f1D772910e1912a70289584a22 --network rinkeby
+npx hardhat nftOwnerOf 0xdA9a6BCFf10D92f1D772910e1912a70289584a22 0 --network rinkeby
+
+
+=== MUMBAI TEST NET - THIS WORKS
+
+npx hardhat deployFakeNFT --network mumbai
+npx hardhat mint 0xE2b3E51b13B6dA0EB30B0cA1bF0dC7d02114585A --network mumbai
+npx hardhat nftOwnerOf 0xE2b3E51b13B6dA0EB30B0cA1bF0dC7d02114585A 0 --network mumbai
+
+
+
+
+
+
+npx hardhat deployCustodian --network mumbai
+Contract deployed at:  0x1b97f846D8E8AF0d6D20f074Cb73fc1fd27aAE5B
+
+
+// deploy the oracle (https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.4/Oracle.sol) using the link address.
+// we use the link address on the mumbai test nest
+npx hardhat deployOracle 0x326C977E6efc84E512bB9C30f76E30c160eD06FB --network mumbai
+Contract deployed at:  0x14d2799901336D37810c49c3ed4f9b8fB0B555BE
+
+
+// Sets permissions for the oracle contract (which is a chainlink contract), using the address of the chainlink node
+npx hardhat oracleSetFulfillmentPermission 0x14d2799901336D37810c49c3ed4f9b8fB0B555BE 0x610f2832AD1e3E738786141fC018BB7bC2281F92 --network mumbai
+
+
+Successfully created bridge viewfunction with incoming access token: v0+yEIHVJ/jQt6J5lsSjtdcb5fiK3G4a
+Succesfully created job with jobid 4 external id 113d550b-8df4-4c68-9a61-5968615a97fb
+
+
+// Sets job configs for the custodian
+npx hardhat setJobConfig 0x1b97f846D8E8AF0d6D20f074Cb73fc1fd27aAE5B 0x326C977E6efc84E512bB9C30f76E30c160eD06FB 0x14d2799901336D37810c49c3ed4f9b8fB0B555BE 113d550b8df44c689a615968615a97fb 0.1 --network mumbai
+
+
+npx hardhat verify 0x1b97f846D8E8AF0d6D20f074Cb73fc1fd27aAE5B 0x994307bD129BD66c08137963710A1caD718da59b 0 --network mumbai
+
+
+npx hardhat custodianFulfills 0x53c672FE5efDec13dBf6a7a7533CE7d1E4f260ed --network mumbai
+npx hardhat custodianOwnerOf 0x1b97f846D8E8AF0d6D20f074Cb73fc1fd27aAE5B 0 --network mumbai
+
+
+TODO:
+- ok, so basically. i cant figure out why its not working and want to do it locally to test it out.
+    BUT in order to get this full flow working locally, i basically need to deploy the stupid LinkToken contract, which
+    i cant figure out how to do via the tests OR hardhat itself:
+    -> % npx hardhat deployLinkToken --network localhost
+    Error HH700: Artifact for contract "LinkToken" not found.
+    basically, cant find LinkToken? I need to import it, but maybe they dont offer that capability? but it SHOULD
+    since it exists in the Cozy project....
+

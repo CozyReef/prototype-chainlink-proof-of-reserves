@@ -2,10 +2,11 @@ version: "3.9"
 services:
   node:
     image: smartcontract/chainlink:1.0.1
+    network_mode: "host"
     command: local n
     stdin_open: true
     tty: true
-    env_file: ./chainlink/mumbai.env
+    env_file: ./chainlink/local.env
     ports:
       - 6688:6688
     depends_on:
@@ -15,6 +16,7 @@ services:
         condition: service_started
   database:
     image: postgres:14
+    network_mode: "host"
     restart: always
     domainname: database
     ports:
@@ -28,6 +30,7 @@ services:
       retries: 5
   adapter:
     image: public.ecr.aws/chainlink/adapters/view-function-adapter:1.0.2
+    network_mode: "host"
     env_file: .adapter.env
     domainname: viewfunctionadapter
     ports:

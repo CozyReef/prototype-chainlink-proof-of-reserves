@@ -9,13 +9,38 @@ ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR)
 
 // TODO - refactor out hardhat tasks
 
+
+task("getChainId", "Get the chain id and network name of running node")
+  .setAction( async (args, hre) => {
+    const networkName = hre.network.name
+    const chainId = hre.network.config.chainId
+
+    console.log("Network name", networkName, " with chain id ", chainId)
+})
+
 task("deployOracle", "Deploys the oracle contract")
   .addPositionalParam("link", "Address of link on the custodian contract")
   .setAction( async (args, hre) => {
   const factory = await hre.ethers.getContractFactory("Oracle")
   const contract = await factory.deploy(args.link, { gasLimit: 2100000 })
 
-  console.log("Contract deployed at: ", contract.address)
+    // Workaround for Mumbai not returning correct address
+    const txHash = contract.deployTransaction.hash
+    const txReceipt = await hre.ethers.provider.waitForTransaction(txHash)
+
+    console.log("Contract deployed at: ", txReceipt.contractAddress)
+})
+
+task("deployLinkToken", "Deploys the oracle contract")
+  .setAction( async (args, hre) => {
+    const factory = await hre.ethers.getContractFactory("LinkToken")
+    const contract = await factory.deploy()
+
+    // Workaround for Mumbai not returning correct address
+    const txHash = contract.deployTransaction.hash
+    const txReceipt = await hre.ethers.provider.waitForTransaction(txHash)
+
+    console.log("Contract deployed at: ", txReceipt.contractAddress)
 })
 
 task("oracleSetFulfillmentPermission")
@@ -44,20 +69,28 @@ task("deployCustodian", "Deploys the custodian contract", async (_, hre) => {
   const factory = await hre.ethers.getContractFactory("Custodian")
   const contract = await factory.deploy({ gasLimit: 2100000 })
 
-  console.log("Contract deployed at: ", contract.address)
+  // Workaround for Mumbai not returning correct address
+  const txHash = contract.deployTransaction.hash
+  const txReceipt = await hre.ethers.provider.waitForTransaction(txHash)
+
+  console.log("Contract deployed at: ", txReceipt.contractAddress)
 })
 
 task("deployFakeNFT", "Deploys the FakeNFT contract", async (_, hre) => {
   const factory = await hre.ethers.getContractFactory("FakeNFT")
   const contract = await factory.deploy("Fake NFT", "FNFT", 1000)
 
-  console.log("Contract deployed at: ", contract.address)
+  // Workaround for Mumbai not returning correct address
+  const txHash = contract.deployTransaction.hash
+  const txReceipt = await hre.ethers.provider.waitForTransaction(txHash)
+
+  console.log("Contract deployed at: ", txReceipt.contractAddress)
 })
 
 task("setJobConfig", "Sets the job config on the custodian contract")
   .addPositionalParam("address", "Address of the custodian contract")
   .addPositionalParam("link", "Address of link on the custodian contract")
-  .addPositionalParam("oracle", "Address of the oracle node")
+  .addPositionalParam("oracle", "Address of the oracle contract")
   .addPositionalParam("jobId", "The oracle job to run")
   .addPositionalParam("fee", "The oracle fee to pay in LINK")
   .setAction(async (args, hre) => {
@@ -106,6 +139,8 @@ task("verify", "Verifies that user owns a token")
   .setAction(async (args, hre) => {
     const contract = await hre.ethers.getContractAt("Custodian", args.contract)
     const transaction = await contract.verify(args.tokenId, { gasLimit: 2100000 })
+
+    await transaction.wait()
 
     console.log("Verification transaction completed: ", transaction.hash)
   })
@@ -191,10 +226,25 @@ const config: HardhatUserConfig = {
         version: "0.8.4",
         settings: { },
       },
+      {
+        version: "0.4.11",
+        settings: { },
+      },
     ],
   },
   defaultNetwork: "hardhat",
-  networks: networkConfigs,
+  networks: {
+    hardhat: {
+    },
+    mumbai: {
+      url: "https://matic-mumbai.chainstacklabs.com",
+      accounts: ["ac53d5dc5e54c5181b07fe5b8d675ec7717102f3bc6eb2b06a3a92fd589e58de"]
+      },
+    rinkeby: {
+      url: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+      accounts: ["ac53d5dc5e54c5181b07fe5b8d675ec7717102f3bc6eb2b06a3a92fd589e58de"]
+    },
+  },
   paths: {
     tests: "./tests",
   },

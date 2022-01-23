@@ -15,3 +15,5 @@ out
 cache
 artifacts
 typechain
+.idea/
+contracts/chainlink
